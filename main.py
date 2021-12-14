@@ -114,7 +114,7 @@ def _update(app):
             pass
 
     @app.on_message(filters.command("showkeys") & filters.private)
-    async def addkeys(client: Client, message: Message):
+    async def showkeys(client: Client, message: Message):
         _me: User = await client.get_me()
         logging.info(message.from_user.id)
         logging.info(message.text)
@@ -185,11 +185,10 @@ def _update(app):
 
     @app.on_chat_member_updated()
     async def on_chat_member_change(client, chat_member_updated: ChatMemberUpdated):
-        # 没有老人的才是新人
-        if not chat_member_updated.old_chat_member is None:
+        # 被踢的可能会重复进，这时候会有老人数据。但新人新数据不可能是空
+        if chat_member_updated.new_chat_member is None:
             return
         await on_handler_new_people(client, chat_member_updated)
-        print(chat_member_updated)
 
     async def on_handler_new_people(client, message):
         target = message.from_user
